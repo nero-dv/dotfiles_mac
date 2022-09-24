@@ -10,7 +10,7 @@ aalias() {
 
 wgetdl() {
         while read -r line; do
-                wget -c "$line"
+                wget "$line"
         done < "$1"
 }
 
