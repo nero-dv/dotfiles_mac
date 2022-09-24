@@ -1,0 +1,15 @@
+#main-window #TabsToolbar {
+  height: 44px !important;
+  overflow: hidden;
+  transition: height .5s .5s !important;
+}
+#main-window[titlepreface*=" "] #TabsToolbar {
+  height: 0 !important;
+}
+#main-window[titlepreface*=" "] #tabbrowser-tabs {
+  z-index: 0 !important;
+}
+
+#navigator-toolbox {
+  border-bottom: 0px solid var(--chrome-content-separator-color);
+}

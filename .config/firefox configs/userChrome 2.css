@@ -1,0 +1,24 @@
+
+
+#main-window #TabsToolbar {
+  height: 44px !important;
+  overflow: hidden;
+  transition: height .5s .5s !important;
+}
+
+#main-window #TabsToolbar {
+  visibility: collapse !important;
+  overflow: hidden !important;
+  height: 0px !important;
+}
+#main-window #tabbrowser-tabs {
+  z-index: 0 !important;
+}
+
+#navigator-toolbox {
+  border-bottom: 0px solid var(--chrome-content-separator-color);
+}
+
+#sidebar-header {
+  display: none;
+}
