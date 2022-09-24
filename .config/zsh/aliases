@@ -8,6 +8,12 @@ aalias() {
         echo "alias ${varalias}='${varcommand}'" >> "$aliases_file"
 }
 
+wgetdl() {
+        while read -r line; do
+                wget -c "$line"
+        done < "$1"
+}
+
 alias ls="exa --all --git --header --long --sort=.name --icons --octal-permissions --no-permissions --group-directories-first --tree -L=1"
 alias lss="exa --all --git --header --long --sort=mod --icons --octal-permissions --no-permissions --group-directories-first --tree -L=2"
 alias lsss="exa --all --git --header --long --sort=mod --icons --octal-permissions --no-permissions --group-directories-first --tree -L=3"
