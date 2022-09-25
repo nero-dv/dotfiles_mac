@@ -1,0 +1,83 @@
+{
+    "editor.cursorStyle": "line-thin",
+    "editor.cursorSmoothCaretAnimation": true,
+    "editor.experimental.pasteActions.enabled": true,
+    "editor.fontFamily": "Consolas ligaturized v3",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 14,
+    "editor.inlineSuggest.enabled": true,
+    "editor.largeFileOptimizations": false,
+    "editor.letterSpacing": -0.41,
+    "editor.roundedSelection": true,
+    "editor.smoothScrolling": true,
+    "editor.snippetSuggestions": "top",
+
+
+    "git.autofetch": true,
+    "git.autorefresh": true,
+    "git.confirmSync": false,
+    "git.enableSmartCommit": true,
+    "git.enableCommitSigning": true,
+
+    
+    "github.copilot.enable": {
+        "*": true,
+        "markdown": false,
+        "plaintext": false,
+        "yaml": false,
+    },
+
+
+    "[javascript]": {
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+    },
+
+
+    "npm.enableRunFromFolder": true,
+
+
+    "search.followSymlinks": false,
+
+
+    "terminal.integrated.detectLocale": "on",
+
+
+    "terminal.integrated.copyOnSelection": true,
+    "terminal.integrated.cursorBlinking": true,
+    "terminal.integrated.cursorStyle": "block",
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.enableBell": true,
+    "terminal.integrated.fontFamily": "MesloLGS Nerd Font Mono",
+    "terminal.integrated.fontSize": 12,
+    "terminal.integrated.fontWeight": "100",
+    "terminal.integrated.fontWeightBold": "300",
+    "terminal.integrated.gpuAcceleration": "on",
+    //"terminal.integrated.letterSpacing": 1.25,
+    //"terminal.integrated.lineHeight": 1.5,
+    "terminal.integrated.rightClickBehavior": "copyPaste",
+    "terminal.integrated.scrollback": 10000,
+    "terminal.integrated.shellIntegration.enabled": true,
+    "terminal.integrated.smoothScrolling": true,
+    "terminal.integrated.showLinkHover": true,
+    "terminal.integrated.tabs.hideCondition": "never",
+    "terminal.integrated.tabs.showActiveTerminal": "always",
+    "terminal.integrated.tabs.enabled": true,
+    "terminal.integrated.tabs.location": "left",
+    "terminal.integrated.tabs.enableAnimation": true,
+
+
+    "vsicons.dontShowNewVersionMessage": true,
+
+
+    "window.titleBarStyle": "native",
+    "window.zoomLevel": 0,
+
+
+    "workbench.editor.openPositioning": "last",
+    "workbench.editor.pinnedTabSizing": "compact",
+    "workbench.editor.revealIfOpen": true,
+    "workbench.editor.tabSizing": "shrink",
+    "workbench.editor.tabCloseButton": "left",
+    "workbench.fontAliasing": "antialiased",
+    "workbench.iconTheme": "vscode-icons",
+}
