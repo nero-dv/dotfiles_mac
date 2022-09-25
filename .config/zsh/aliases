@@ -16,20 +16,28 @@ wgetdl() {
 
 docker-mkvlan() {
         if [ -z "$1" ]; then
-                echo "Usage: mkvlan <docker macvlan name> <vlan name> <unique ip>"
-                echo "Example: macvlan1 vlan1 10.0.0.24"
-                echo "Must be run as a privileged user"
+                echo "Usage: docker-mkvlan <docker macvlan name>"
+                echo "Example: docker-mkvlan macvlan1"
                 return 1
         fi
-        docker network create -d macvlan \
+        sudo docker network create -d macvlan \
         --subnet=10.0.0.0/24 \
         --gateway=10.0.0.1 \
         -o parent=enp39s0 \
-        "$1";
-        ip link add "$2" link enp39s0 type macvlan mode bridge;
-        ip addr add "$3/24" dev "$2";
-        ip link set "$2" up;
-        ip route add 10.0.0.0/24 dev "$2";
+        $1;
+}
+
+mkvlan() {
+        if [ -z "$1" ]; then
+                echo "Usage: mkvlan <vlan name> <unique ip/24>"
+                echo "Example: docker-mkvlan 10.0.0.50/24"
+                return 1
+        fi
+        sudo ip link add "$1" link enp39s0 type macvlan mode bridge;
+        sudo ip addr add "$2" dev "$1";
+        sudo ip link set "$1" up;
+        ## if no default route exists, add route to default gateway
+        # sudo ip route add 10.0.0.0/24 dev $2;
 }
 
 alias ls="exa --all --git --header --long --sort=.name --icons --octal-permissions --no-permissions --group-directories-first --tree -L=1"
