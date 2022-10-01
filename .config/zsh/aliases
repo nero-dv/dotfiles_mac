@@ -42,65 +42,95 @@ mkvlan() {
 
 source /Volumes/meouch/home/${USER}/private.env
 mf_mounts="$HOME/.config/zsh/macfuse_mounts.ishfs"
+remotes="$HOME/.config/zsh/sshfs_remotes"
+
+# Regex to match where macfuse volumes are mounted and only print the matches
+# Saves the output to a file
+# mount > /dev/null 2>&1 | rg -Pe "(?:)(.Vol)(.*?)(?=\s\(macfuse)" -o > macfusemounts.tmp > /dev/null 2>&1
+
 ishfs() {
         if [ -z "$1" ]; then
-                mount | rg -Pe "(?:)(.Vol)(.*?)(?=\s\(macfuse)" -o
+                mount | rg -Pe "(?:)(.Vol)(.*?)(?=\s\(macfuse)" -o > "${mf_mounts}"
         fi
         for i in "$@"; do
-            cat $mf_mounts | rg $i > /dev/null 2>&1; echo $?
+            mount | rg $i > /dev/null 2>&1; echo $?
         done
 }
 
 mountr() {
     if [ -z "$1" ]; then
-        locals=($l_home $l_sdd1 $l_sdc1)
-        for item in "${locals[@]}"; do
-            if [[ $(ishfs $item) -eq 1 ]]; then
-                echo "Mounting to ${l_vol}$item"
-                sshfs $lab3:$item ${l_vol}$item
-            else
-                echo "${l_vol}$item is already mounted"
-            fi
-        done
-        $(ishfs) > $mf_mounts
+        if [[ -s "${remotes}" ]]; then
+            while read -r line; do
+                remote="$(cut -d' ' -f1 <<<"${line}")"
+                local="$(cut -d' ' -f2 <<<"${line}")"
+                if [[ $(ishfs ${local}) -eq 1 ]]; then
+                    echo "Mounting ${remote} to ${local}"
+                    sshfs ${remote} ${local}
+                else
+                    echo "${remote} is already mounted to ${local}"
+                fi
+            done < "$remotes"
+        else
+            echo "No remotes found in ${remotes}"
+        fi
     else
         echo "Invalid argument."
     fi
 }
-# Regex to match where macfuse volumes are mounted and only print the matches
-# Saves the output to a file
-# mount > /dev/null 2>&1 | rg -Pe "(?:)(.Vol)(.*?)(?=\s\(macfuse)" -o > macfusemounts.tmp > /dev/null 2>&1
 
 umountr() {
     if [ -z "$1" ]; then
-        if [[ ! -f $mf_mounts ]]; then
-            $(ishfs) > $mf_mounts
-        fi
-        if [[ ! -s $mf_mounts ]]; then
-            $(ishfs) > $mf_mounts
-            echo "There aren't any SSHFS volumes currently mounted, though if there should be, check the file $mf_mounts"
-            echo "If there are volumes that should be mounted, try running umountr again."
-            echo "If umountr fails to find any volumes mounted again, check lsof for sshfs for open files, or try restarting Finder."
-            echo "If all else fails, try restarting the computer."
-            return 1
-        fi
-        if [[ -s $mf_mounts ]]; then
+        if [[ -s "${remotes}" ]]; then
             while read -r line; do
-                echo "Unmounting $line"
-                umount ${line}; echo $?
-                if [[ $? -eq 0 ]]; then
-                    echo "Successfully unmounted $line"
-                    rm $mf_mounts
-                elif [[ $? -eq 1 ]]; then
-                    echo "Unmounting failed. Check lsof for sshfs for open files, or try restarting Finder."
-                    return 1
+                remote="$(cut -d' ' -f1 <<<"${line}")"
+                local="$(cut -d' ' -f2 <<<"${line}")"
+                if [[ $(ishfs ${local}) -eq 0 ]]; then
+                    echo "Unmounting ${local} from ${remote}"
+                    umount ${local}
+                else
+                    echo "${remote} is not mounted."
                 fi
-            done < "$mf_mounts"
+            done < "$remotes"
+        else
+            echo "No remotes found in ${remotes}"
         fi
     else
         echo "Invalid argument."
     fi
 }
+
+# mountr() {
+#     if [ -z "$1" ]; then
+#         locals=($l_home $l_sdd1 $l_sdc1)
+#         for item in "${locals[@]}"; do
+#             if [[ $(ishfs $item) -eq 1 ]]; then
+#                 echo "Mounting to ${l_vol}$item"
+#                 sshfs $lab3:$item ${l_vol}$item
+#             else
+#                 echo "${l_vol}$item is already mounted"
+#                 return 1
+#             fi
+#         done
+#         $(ishfs) && echo "Mounts:" && cat "${mf_mounts}"
+#     else
+#         echo "Invalid argument."
+#         return 1
+#     fi
+# }
+
+# umountr() {
+#     if [ -z "$1" ]; then
+#         if [[ -s "${mf_mounts}" ]]; then
+#             echo "Unmounting Filesystems:" && cat "${mf_mounts}" && umount -f $(cat "${mf_mounts}")
+#         else
+#             echo "No mounts to unmount."
+#             return 1
+#         fi
+#     else
+#         echo "Invalid argument."
+#         return 1
+#     fi
+# }
     
 alias ls="exa --all --git --header --long --sort=.name --icons --octal-permissions --no-permissions --group-directories-first --tree -L=1"
 alias lss="exa --all --git --header --long --sort=mod --icons --octal-permissions --no-permissions --group-directories-first --tree -L=2"
