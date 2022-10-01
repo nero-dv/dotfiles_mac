@@ -43,6 +43,10 @@ mkvlan() {
 source /Volumes/meouch/home/${USER}/private.env
 
 ishfs() {
+        if [ -z "$1" ]; then
+                mount | rg -e ${l_vol}$l_home -e ${l_vol}$l_sdd1 -e ${l_vol}$l_sdc1
+                return 1
+        fi
         for i in "$@"; do
             mount | rg $i > /dev/null 2>&1; echo $?
         done
@@ -59,29 +63,60 @@ mountr() {
                 echo "${l_vol}$item is already mounted"
             fi
         done
-        mount | rg -e ${l_vol}$l_home -e ${l_vol}$l_sdd1 -e ${l_vol}$l_sdc1
+        mount | rg -Pe "(?:)(.Vol)(.*?)(?=\s\(macfuse)" -o > macfuse_mounts.tmp
     else
         echo "Invalid argument."
     fi
 }
+# Regex to match where macfuse volumes are mounted and only print the matches
+# Saves the output to a file
+# mount > /dev/null 2>&1 | rg -Pe "(?:)(.Vol)(.*?)(?=\s\(macfuse)" -o > macfusemounts.tmp > /dev/null 2>&1
 
 umountr() {
+    if [[ ! -f macfuse_mounts.tmp ]]; then
+        mount | rg -Pe "(?:)(.Vol)(.*?)(?=\s\(macfuse)" -o > macfusemounts.tmp; echo $?
+        if [[ $? -eq 0 ]]; then
+            echo "macfuse_mounts.tmp created"
+        else
+            echo "Error creating macfuse_mounts.tmp. Are you sure you have macfuse volumes mounted?"
+            return 1
+        fi
+
+    fi
     if [ -z "$1" ]; then
-        umount_array=($l_home $l_sdd1 $l_sdc1)
-        sudo killall Finder
-        open /System/Library/CoreServices/Finder.app
-        for item in "${umount_array[@]}"; do
-            if [[ $(ishfs $item) -eq 0 ]]; then
-                echo "Unmounting ${l_vol}$item"
-                umount ${l_vol}$item
+        while read -r line; do
+            if [[ $(ishfs ${line}) == 0 ]]; then
+                echo "Unmounting $line"
+                umount ${line}
             else
-                echo "${l_vol}$item is not mounted"
+                echo "${line} is not mounted."
             fi
-        done
+        done < macfusemounts.tmp
     else
         echo "Invalid argument."
     fi
+
 }
+    #     umount_array=($l_home $l_sdd1 $l_sdc1)
+    #     sudo killall Finder
+    #     open /System/Library/CoreServices/Finder.app
+    #     for item in "${umount_array[@]}"; do
+    #         if [[ $(ishfs $item) -eq 0 ]]; then
+    #             echo "Unmounting ${l_vol}$item"
+    #             umount ${l_vol}$item > /dev/null 2>&1
+    #             if [[ $(echo $?) -eq 0 ]]; then
+    #                 echo "Unmounted ${l_vol}$item"
+    #             else
+    #                 echo "Failed to unmount ${l_vol}$item"
+    #             fi
+    #         else
+    #             echo "${l_vol}$item is not mounted"
+    #         fi
+    #     done
+    # else
+    #     echo "Invalid argument."
+    # fi
+#}
 
 #alias sshfsrg="$(mount | $(rg -e ${l_home_mount} -e ${l_sdd1} -e ${l_sdc1}))"
 
