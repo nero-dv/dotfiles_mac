@@ -96,6 +96,7 @@ umountr() {
                     return 1
                 fi
             done < "$mf_mounts"
+        fi
     else
         echo "Invalid argument."
     fi
