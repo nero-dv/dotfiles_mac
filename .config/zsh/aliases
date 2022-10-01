@@ -40,6 +40,51 @@ mkvlan() {
         # sudo ip route add 10.0.0.0/24 dev $2;
 }
 
+source /Volumes/meouch/home/${USER}/private.env
+
+ishfs() {
+        for i in "$@"; do
+            mount | rg $i > /dev/null 2>&1; echo $?
+        done
+}
+
+mountr() {
+    if [ -z "$1" ]; then
+        locals=($l_home $l_sdd1 $l_sdc1)
+        for item in "${locals[@]}"; do
+            if [[ $(ishfs $item) -eq 1 ]]; then
+                echo "Mounting to ${l_vol}$item"
+                sshfs $lab3:$item ${l_vol}$item
+            else
+                echo "${l_vol}$item is already mounted"
+            fi
+        done
+        mount | rg -e ${l_vol}$l_home -e ${l_vol}$l_sdd1 -e ${l_vol}$l_sdc1
+    else
+        echo "Invalid argument."
+    fi
+}
+
+umountr() {
+    if [ -z "$1" ]; then
+        umount_array=($l_home $l_sdd1 $l_sdc1)
+        sudo killall Finder
+        open /System/Library/CoreServices/Finder.app
+        for item in "${umount_array[@]}"; do
+            if [[ $(ishfs $item) -eq 0 ]]; then
+                echo "Unmounting ${l_vol}$item"
+                umount ${l_vol}$item
+            else
+                echo "${l_vol}$item is not mounted"
+            fi
+        done
+    else
+        echo "Invalid argument."
+    fi
+}
+
+#alias sshfsrg="$(mount | $(rg -e ${l_home_mount} -e ${l_sdd1} -e ${l_sdc1}))"
+
 alias ls="exa --all --git --header --long --sort=.name --icons --octal-permissions --no-permissions --group-directories-first --tree -L=1"
 alias lss="exa --all --git --header --long --sort=mod --icons --octal-permissions --no-permissions --group-directories-first --tree -L=2"
 alias lsss="exa --all --git --header --long --sort=mod --icons --octal-permissions --no-permissions --group-directories-first --tree -L=3"

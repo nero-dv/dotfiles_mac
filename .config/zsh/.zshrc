@@ -16,6 +16,9 @@ source $ZSH/oh-my-zsh.sh
 # For a full list of active aliases, run `alias`.
 [[ -f $ZDOTDIR/aliases ]] && source $ZDOTDIR/aliases
 
+# Create .zprofile if it doesn't exist.
+[[ ! -f $HOME/.zprofile ]] && echo "source $HOME/.config/zsh/.zprofile" > $HOME/.zprofile && source $HOME/.zprofile
+
 # Auto suggestions and syntax highlighting
 
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
